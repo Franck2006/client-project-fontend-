@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>c sharp work</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav>
+      <div>crud operation</div>
+      <ul>
+        <li></li>
+      </ul>
+    </nav>
+    <main>
+      <div class="adding-btn-container">
+        <h1>title</h1>
+        <button class="add_record">add &plus;</button>
+      </div>
+      <table class="_table">
+        <thead class="_table_header">
+          <th>Nom</th>
+          <th>post nom</th>
+          <th>numero</th>
+          <th>status</th>
+          <th>quantité</th>
+          <th>email</th>
+          <th></th>
+        </thead>
+      </table>
+      <div class="no_data_container">
+        <p>please edit data</p>
+        <button>edit</button>
+      </div>
+    </main>
+
+    <div class="add_user_container_model close_model">
+      <form style="display: flex; flex-direction: column; gap: 30px">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          "
+        >
+          <p style="margin: 0; text-transform: capitalize; font-weight: bold">
+            ajouter un client
+          </p>
+          <span
+            class="remove_model_btn"
+            style="
+              cursor: pointer;
+              width: 30px;
+              height: 30px;
+              border-radius: 100%;
+              background-color: rgba(0 0 0 /0.1);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            "
+          >
+            &times;
+          </span>
+        </div>
+        <div
+          class="input_container"
+          style="display: flex; flex-direction: column; gap: 20px"
+        >
+          <input type="text" placeholder="nom" name="nom" class="name" />
+          <input
+            type="text"
+            placeholder="postnom"
+            name="postnom"
+            class="last_name"
+          />
+          <input type="text" placeholder="email" name="email" class="email" />
+          <input
+            type="text"
+            placeholder="numero"
+            name="numero"
+            class="numero"
+          />
+          <input
+            type="text"
+            placeholder="quantity"
+            name="quantity"
+            class="quantity"
+          />
+          <div style="display: flex; align-items: center; gap: 10px">
+            <span> anbonné </span>
+            <input
+              type="checkbox"
+              placeholder="nom"
+              name=""
+              style="cursor: pointer"
+              class="isSubscribed"
+            />
+          </div>
+          <input
+            type="submit"
+            value="soumettre"
+            placeholder="nom"
+            class="submit_btn"
+            style="
+              background-color: darkblue;
+              color: white;
+              cursor: pointer;
+              height: 30px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            "
+          />
+        </div>
+      </form>
+    </div>
+
+    <script type="module" src="./data.js"></script>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
