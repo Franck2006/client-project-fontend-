@@ -1,23 +1,27 @@
-import { data } from './data.js'
+import { data } from './data.js';
+import { Enviroment } from './env.js';
 
 const user_record_data = data()
 const url = "http://localhost:3000"
 
 // this is where we define the crud operatiion
 async function getUsers(){
-    const answer =  await fetch( url + "/data", {
+    const answer =  await fetch( url + "/client-crud", {
         method:"GET"
     })
 
-    return await answer.json()
+    const clients_reponse = await answer.json()
+    return clients_reponse
 }
 
+// this is for all the users
 await getUsers()
+
 
 async function updateUser(user){
     const userId = user.id
     console.log(user)
-    return await fetch( url + `/data/${userId}`,{
+    return await fetch( url + `/client-crud/${userId}`,{
         method:"PATCH",
         headers:{
             "Content-Type":"application/json",
@@ -34,7 +38,8 @@ async function updateUser(user){
 }
 
 async function deleteUser(id) {
-    return await fetch( url + `/data/${id}`,{
+
+    return await fetch( url + `/client-crud/${id}`,{
         method: "DELETE",
         headers: {
             "Content-Type":"application/json",
@@ -43,7 +48,7 @@ async function deleteUser(id) {
 }
 
 async function createUser(created_user) {
-    return await fetch( url + "/data",{
+    return await fetch( url + "/client-crud",{
         method: "POST",
         headers: {
             "Content-Type":"application/json",
@@ -94,22 +99,39 @@ remove_model_btn.addEventListener("click",()=>{
     }
 })
 
-submit_btn.addEventListener("click",()=>{
+submit_btn.addEventListener("click",async(e)=>{
+    e.preventDefault()
     const created_user_data = {
-        name: name_input.value,
-        lastname:    last_name_input.value,
+        nom: name_input.value,
+        postnom:    last_name_input.value,
         email:    email_input.value,
         numero:    numero_input.value,
-        article:    quantity_input.value,
-        isSubscribed :    isSubscribed_input.value,
+        quantite:    quantity_input.value,
+        statut :  true  //isSubscribed_input.value,
     }
+    console.log("the created user payload is   :f",created_user_data)
 
     if (typeOfbtn === "create") {
-        createUser(created_user_data)
+        const userPayload = await fetch( url + "/client-crud",{
+            method: "POST",
+            headers: {
+                "Content-Type":"application/json",
+            },
+            body: JSON.stringify(created_user_data)
+        })
+
+        // this is the field that we are going to return
+        console.log(userPayload)
+        if (userPayload.ok === true) {
+            await display_record_fn()
+        }
+        return userPayload
+        
     }
     if(typeOfbtn === "modify"){
         console.log(" this is for the other part that we are working")
         updateUser(created_user_data)
+        console.log(created_user_data)
     }
 
     clearInput()
@@ -130,17 +152,20 @@ async function display_record_fn (){
     
     const users = await getUsers()
 
-    table_data.innerHTML += users.map(({id, name, lastname, number, article, email, isStored})=>{
+    console.log("the mapped users are :",users)
+
+    table_data.innerHTML += users.map(({id,nom,postnom,numero,statut,quantite,email})=>{
         return `<tbody>
-                    <th>${name}</th>
-                    <th>${lastname}</th>
-                    <th>${number}</th>
+                    <th>${nom}</th>
+                    <th>${postnom}</th>
+                    <th>${numero}</th>
                     <th class="user_status">
-                        <button data-id="${id}" class="${ isStored ? "user_subscribed" :"non_user_subscribed"}">
-                            ${ isStored ? "abonné" : "non abonné"}
+                        <button data-id="${id}" class="${ statut ? "user_subscribed" :"non_user_subscribed"}">
+          
+                        ${ statut ? "abonné" : "non abonné"}
                         </button> 
                     </th>
-                    <th>${article}</th>
+                    <th>${quantite}</th>
                     <th>${email}</th>
                     
                     <th class="user_btns">
@@ -186,14 +211,14 @@ async function display_record_fn (){
             const currentBtn = e.target.dataset.id
             const users = await getUsers()
             const selectedUser = users.filter(user => user.id === currentBtn)
-            const {name, lastname,  number, article, email, isStored} = selectedUser[0]
+            const {nom,postnom,numero,statut,quantite,email} = selectedUser[0]
 
-            name_input.value=  name,
-            last_name_input.value= lastname,
+            name_input.value=  nom,
+            last_name_input.value= postnom,
             email_input.value= email,
-            numero_input.value = number,
-            quantity_input.value = article,
-            isSubscribed_input.value = isStored
+            numero_input.value = numero,
+            quantity_input.value = quantite,
+            isSubscribed_input.value = statut
 
         })
     })
