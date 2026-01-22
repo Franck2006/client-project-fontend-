@@ -2,63 +2,34 @@ import { data } from './data.js';
 import { Enviroment } from './env.js';
 
 const user_record_data = data()
-const url = "http://localhost:3000"
+const url = "http://localhost:3000/client-crud"
 
 // this is where we define the crud operatiion
 async function getUsers(){
-    const answer =  await fetch( url + "/client-crud", {
+    const answer =  await fetch( url , {
         method:"GET"
     })
-
     const clients_reponse = await answer.json()
-    return clients_reponse
+    display_record_fn(clients_reponse)
 }
 
 // this is for all the users
-await getUsers()
+getUsers()
 
-
-async function updateUser(user){
-    const userId = user.id
-    console.log(user)
-    return await fetch( url + `/client-crud/${userId}`,{
-        method:"PATCH",
-        headers:{
-            "Content-Type":"application/json",
-        },
-        body: JSON.stringify({
-            "name": "franck",
-            "lastname": "djuma",
-            "email": "amanifranck2005@gmail.com",
-            "numero": "0969590595",
-            "article": "one article",
-            "isSubscribed": "on"
-        })
-    })
-}
-
-async function deleteUser(id) {
-
-    return await fetch( url + `/client-crud/${id}`,{
+// this is the function of deleting client
+function deleteUser(id) {
+    fetch( url + `/${id}`,{
         method: "DELETE",
         headers: {
             "Content-Type":"application/json",
         }
-    })
-}
-
-async function createUser(created_user) {
-    return await fetch( url + "/client-crud",{
-        method: "POST",
-        headers: {
-            "Content-Type":"application/json",
-        },
-        body: JSON.stringify(created_user)
+    }).then(()=>{
+        getUsers()
     })
 }
 
 // // these are the main elements
-const table_data = document.querySelector("._table")
+const table_data = document.querySelector("._table_row")
 const add_record = document.querySelector(".add_record")
 const table_header = document.querySelector("._table_header")
 const no_data_container = document.querySelector(".no_data_container")
@@ -73,11 +44,13 @@ const numero_input = document.querySelector(".numero")
 const quantity_input  = document.querySelector(".quantity")
 const isSubscribed_input = document.querySelector(".isSubscribed")
 
-// this is the submit bnt
+// this is the submit btn
 const submit_btn = document.querySelector(".submit_btn")
 
+// these are the code that are going to oppen and close the model
 let isOpen = false
 let typeOfbtn = ""
+
 // // this is for bringing the form model
 const openModel = () => {
     isOpen = true
@@ -86,55 +59,69 @@ const openModel = () => {
         add_user_container_model.classList.remove("close_model")
     }
 }
+
+const closeModel = () => {
+    isOpen = false
+    if(isOpen === false){
+        add_user_container_model.classList.add("close_model")
+        add_user_container_model.classList.remove("open_model")
+    }
+}
 add_record.addEventListener("click",()=>{
     typeOfbtn = "create"
     openModel()
 })
 
 remove_model_btn.addEventListener("click",()=>{
-    isOpen = false
-    if(isOpen === false){
-        add_user_container_model.classList.add("close_model")
-        add_user_container_model.classList.remove("open_model")
-    }
+    closeModel()
 })
 
+
+let curreId = ""
 submit_btn.addEventListener("click",async(e)=>{
+    // here we are preventing the default values 
     e.preventDefault()
+
+    // this is the user model
     const created_user_data = {
         nom: name_input.value,
-        postnom:    last_name_input.value,
-        email:    email_input.value,
-        numero:    numero_input.value,
-        quantite:    quantity_input.value,
-        statut :  true  //isSubscribed_input.value,
+        postnom: last_name_input.value,
+        email: email_input.value,
+        numero: numero_input.value,
+        quantite: quantity_input.value,
+        statut : false  //isSubscribed_input.value,
     }
-    console.log("the created user payload is   :f",created_user_data)
+
+    // this is the part tat we are trying  the check box works
+    console.log(`the value of the is targed is ${isSubscribed_input.value}`)
 
     if (typeOfbtn === "create") {
-        const userPayload = await fetch( url + "/client-crud",{
+        await fetch( url ,{
             method: "POST",
             headers: {
                 "Content-Type":"application/json",
             },
             body: JSON.stringify(created_user_data)
+        }).then(()=>{
+            getUsers()
+            clearInput()
+            closeModel()
         })
-
-        // this is the field that we are going to return
-        console.log(userPayload)
-        if (userPayload.ok === true) {
-            await display_record_fn()
-        }
-        return userPayload
-        
     }
-    if(typeOfbtn === "modify"){
-        console.log(" this is for the other part that we are working")
-        updateUser(created_user_data)
-        console.log(created_user_data)
+    else if(typeOfbtn === "modify"){
+        alert(" the modify btn is working")
+        await fetch( url + `/${curreId}`,{
+            method:"PATCH",
+            headers:{
+                "Content-Type":"application/json",
+            },
+            body: JSON.stringify(created_user_data)
+        }).then(()=> {
+            getUsers()
+            clearInput()
+            closeModel()
+        })
     }
-
-    clearInput()
 })
 
 function clearInput(){
@@ -148,14 +135,11 @@ function clearInput(){
 
 
 // // this is the function of the displaying the data
-async function display_record_fn (){
-    
-    const users = await getUsers()
+async function display_record_fn (clients_reponse){
+    console.log("the mapped users are :",clients_reponse)
 
-    console.log("the mapped users are :",users)
-
-    table_data.innerHTML += users.map(({id,nom,postnom,numero,statut,quantite,email})=>{
-        return `<tbody>
+    table_data.innerHTML = clients_reponse.map(({id,nom,postnom,numero,statut,quantite,email})=>{
+        return `<tr>
                     <th>${nom}</th>
                     <th>${postnom}</th>
                     <th>${numero}</th>
@@ -179,7 +163,7 @@ async function display_record_fn (){
                             voir details
                         </button>
                     </th>
-                </tbody>`
+                </tr>`
     }).join("") 
     
     // crud operation btns
@@ -191,14 +175,13 @@ async function display_record_fn (){
     delete_user_btns.forEach((btn)=>{
         btn.addEventListener("click",async (e)=>{
             const currentBtn = e.target.dataset.id
-            await deleteUser(currentBtn)
+            deleteUser(currentBtn)
         })
     })
 
     see_user_details_btns.forEach((btn)=>{
         btn.addEventListener("click",(e)=>{
             const currentBtn = e.target.dataset.id
-            console.log(`the see user details btn is ${currentBtn}`)
         })
     })
 
@@ -208,24 +191,26 @@ async function display_record_fn (){
             openModel()
             typeOfbtn = "modify"
             
+            // this is the place of selecting the selected user 
             const currentBtn = e.target.dataset.id
-            const users = await getUsers()
-            const selectedUser = users.filter(user => user.id === currentBtn)
+            const selectedUser = clients_reponse.filter(user => user.id === currentBtn)
             const {nom,postnom,numero,statut,quantite,email} = selectedUser[0]
 
-            name_input.value=  nom,
-            last_name_input.value= postnom,
-            email_input.value= email,
-            numero_input.value = numero,
-            quantity_input.value = quantite,
+            // this is the place setting 
+            curreId = currentBtn
+            name_input.value=  nom
+            last_name_input.value= postnom
+            email_input.value= email
+            numero_input.value = numero
+            quantity_input.value = quantite
             isSubscribed_input.value = statut
 
         })
     })
 }
 
-display_record_fn()
 
+// this is for deleting the board
 setInterval(() => {
     if (user_record_data.length > 0) {
         no_data_container.style.display = "none"

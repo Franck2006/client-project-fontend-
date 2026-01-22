@@ -137,7 +137,7 @@ div.add_user_container_model{
 div.add_user_container_model form {
     padding: 20px;
     width: 500px;
-    height: 500px;
+    /* height: 500px; */
     border-radius: 5px;
     background-color: white;
 }

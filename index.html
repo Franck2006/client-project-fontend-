@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -26,9 +26,10 @@
           <th>status</th>
           <th>quantité</th>
           <th>email</th>
-          <th></th>
+          <th>action</th>
         </thead>
-       <!-- this is the place of the users -->
+        <tbody class="_table_row"></tbody>
+        <!-- this is the place of the users -->
       </table>
       <div class="no_data_container">
         <p>please edit data</p>
@@ -89,19 +90,17 @@
             class="quantity"
           />
           <div style="display: flex; align-items: center; gap: 10px">
-            <span> anbonné </span>
+            <label for="isSubscribed" style="cursor: pointer"> anbonné </label>
             <input
-              type="checkbox"
-              placeholder="nom"
-              name=""
+              type="radio"
               style="cursor: pointer"
               class="isSubscribed"
+              id="isSubscribed"
             />
           </div>
           <input
             type="submit"
             value="soumettre"
-            placeholder="nom"
             class="submit_btn"
             style="
               background-color: darkblue;
